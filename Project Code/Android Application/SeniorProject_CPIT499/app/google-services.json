@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "437158953984",
+    "firebase_url": "https://seniorproject-cpit499db.firebaseio.com",
+    "project_id": "seniorproject-cpit499db",
+    "storage_bucket": "seniorproject-cpit499db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437158953984:android:c9759beed62098e6",
+        "android_client_info": {
+          "package_name": "com.example.yousef.seniorproject_cpit499"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437158953984-va7junlaa162fn5qais284ebqc0bdkge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZpMaiSEN3GFtutAdxcYJUvNdmJfYa5KU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
