@@ -9,13 +9,15 @@ import android.widget.TextView;
 
 public class LoginActivity extends AppCompatActivity {
 
+
+    TextView nameEmail, password;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        TextView nameEmail = (TextView) findViewById(R.id.nameEmail);
-        TextView password = (TextView)  findViewById(R.id.password);
+
 
 
         Button logIn =(Button) findViewById(R.id.logInBot);
@@ -35,6 +37,13 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+    }
+
+    public void login(View view){
+        nameEmail = (TextView) findViewById(R.id.nameEmail);
+        password = (TextView)  findViewById(R.id.password);
+
 
     }
 }
