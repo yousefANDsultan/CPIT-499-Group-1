@@ -36,13 +36,13 @@
                 tools:layout_editor_absoluteY="23dp" />
 
             <EditText
-                android:id="@+id/nameEmail"
+                android:id="@+id/loginEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:hint="Name or Email"
-                android:inputType="textPersonName"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
                 android:textSize="20sp"
                 tools:layout_editor_absoluteX="85dp"
                 tools:layout_editor_absoluteY="79dp" />
