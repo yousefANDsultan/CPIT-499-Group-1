@@ -18,10 +18,10 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
 
-    TextView et_email, et_password;
-    String email, password;
-    FirebaseAuth mAuth;
-    ProgressDialog progressDialog;
+    private TextView et_email, et_password;
+    private String email, password;
+    private FirebaseAuth mAuth;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
