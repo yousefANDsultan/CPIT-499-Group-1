@@ -24,7 +24,8 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".CartActivity" />
         <activity android:name=".addressActivity" />
-        <activity android:name=".checkoutActivity"></activity>
+        <activity android:name=".checkoutActivity" />
+        <activity android:name=".FrigdeActivity"></activity>
     </application>
 
 </manifest>

@@ -110,6 +110,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void fridgeItems(View view) {
-        Toast.makeText(getApplicationContext(), "product ID: " + productsList.get(0).ID, Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(getApplicationContext(), FrigdeActivity.class));
     }
 }

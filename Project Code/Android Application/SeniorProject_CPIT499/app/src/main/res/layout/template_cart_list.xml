@@ -29,7 +29,6 @@
         android:layout_alignBaseline="@+id/cart_item_quantity"
         android:layout_alignBottom="@+id/cart_item_quantity"
         android:layout_alignStart="@+id/textView8"
-        android:layout_below="@id/textView9"
         android:text="Quantity:" />
 
     <TextView
