@@ -34,6 +34,7 @@ public class SignUpActivity extends AppCompatActivity {
     private CollectionReference database = FirebaseFirestore.getInstance().collection("users");
     private FirebaseAuth mAuth;
     ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,16 +52,18 @@ public class SignUpActivity extends AppCompatActivity {
         });*/
     }
 
-    public void register(View view){
+    public void register(View view) {
         showProgressDialog();
-    // This Method use to initiate the input texts then initiate it as Sting variables
+        // This Method use to initiate the input texts then initiate it as Sting variables
         initializeStrings();
-    // This Method use to validate all field by some conditions
+        // This Method use to validate all field by some conditions
         validation();
-        if(!validation()){
+        if (!validation()) {
             Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
             progressDialog.dismiss();
         }
+
+        //register new user .. create new collection
         else {
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
@@ -71,22 +74,21 @@ public class SignUpActivity extends AppCompatActivity {
                                 "User Register Successful", Toast.LENGTH_LONG).show();
 
                         Map<String, String> user = new HashMap<>();
-                        user.put("name", userName);
+                        user.put("Name", userName);
+                        user.put("Email", email);
 
-                        database.document(email).set(user);
+                        database.document(mAuth.getUid()).set(user);
 
                         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK );
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
-                    }
-                    else{
-                        if(task.getException() instanceof FirebaseAuthUserCollisionException){
+                    } else {
+                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                             Toast.makeText(getApplicationContext(),
                                     "This Email is Existed", Toast.LENGTH_SHORT).show();
                             et_email.setError("This Email is already Existed");
                             et_email.requestFocus();
-                        }
-                        else{
+                        } else {
                             Toast.makeText(getApplicationContext(),
                                     task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
@@ -96,7 +98,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public void initializeStrings(){
+    public void initializeStrings() {
         et_userName = (TextView) findViewById(R.id.userName);
         et_email = (TextView) findViewById(R.id.email);
         et_confirmEmail = (TextView) findViewById(R.id.confirmEmail);
@@ -110,59 +112,52 @@ public class SignUpActivity extends AppCompatActivity {
         confirmPassword = et_confirmPassword.getText().toString();
     }
 
-    public boolean validation(){
+    public boolean validation() {
         boolean valid = true;
 
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             et_email.setError("Enter Correct Email");
             et_email.requestFocus();
             valid = false;
-        }
-        else if(!email.equals(confirmEmail)){
+        } else if (!email.equals(confirmEmail)) {
             et_confirmEmail.setError("Email NOT match");
             et_confirmEmail.requestFocus();
             valid = false;
         }
-        if(confirmPassword.isEmpty()){
+        if (confirmPassword.isEmpty()) {
             et_confirmPassword.setError("Require field");
             et_confirmPassword.requestFocus();
             valid = false;
         }
-        if(password.length() < 6){
+        if (password.length() < 6) {
             et_password.setError("Minimum length should be 6");
             et_password.requestFocus();
             valid = false;
         }
-        if(password.isEmpty()){
+        if (password.isEmpty()) {
             et_password.setError("Require field");
             et_password.requestFocus();
             valid = false;
         }
-        if(confirmEmail.isEmpty()){
+        if (confirmEmail.isEmpty()) {
             et_confirmEmail.setError("Require field");
             et_confirmEmail.requestFocus();
             valid = false;
-        }
-        else if(!password.equals(confirmPassword)){
+        } else if (!password.equals(confirmPassword)) {
             et_confirmPassword.setError("Password NOT match");
             et_confirmPassword.requestFocus();
             valid = false;
         }
-        if(email.isEmpty()){
+        if (email.isEmpty()) {
             et_email.setError("Require field");
             et_email.requestFocus();
             valid = false;
         }
-        if(userName.isEmpty()){
+        if (userName.isEmpty()) {
             et_userName.setError("Require field");
             et_userName.requestFocus();
             valid = false;
         }
-
-
-
-
-
 
         return valid;
     }

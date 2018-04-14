@@ -41,6 +41,17 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //to stay in user
+        if(mAuth.getCurrentUser() != null){
+            finish();
+            startActivity(new Intent(this, HomeActivity.class));
+        }
+    }
+
     public void login(View view){
         showProgressDialog();
         initializeStrings();
