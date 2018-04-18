@@ -76,7 +76,7 @@ public class addressActivity extends AppCompatActivity {
 
                 }
             });
-            startActivity(new Intent(getApplicationContext(), checkoutActivity.class));
+            startActivity(new Intent(getApplicationContext(), checkoutSummaryActivity.class));
         }
     }
 

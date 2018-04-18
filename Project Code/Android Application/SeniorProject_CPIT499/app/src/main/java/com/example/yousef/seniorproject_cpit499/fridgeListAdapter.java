@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.CollectionReference;
+
 import java.util.List;
 
 /**
@@ -15,32 +17,26 @@ import java.util.List;
 
 public class fridgeListAdapter extends RecyclerView.Adapter<fridgeListAdapter.ViewHolder> {
 
-    private List<products> fridgeList;
+    private List<String> fridgeList;
     private Context context;
+    String itemName;
 
-    String idTag, itemName;
 
-
-    public fridgeListAdapter(Context context, List<products>fridgeList){
+    public fridgeListAdapter(Context context, List<String> fridgeList) {
         this.context = context;
         this.fridgeList = fridgeList;
     }
 
     @Override
-    public fridgeListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.template_fridge_list, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(fridgeListAdapter.ViewHolder holder, int position) {
-
-        idTag = fridgeList.get(position).ID;
-        itemName = fridgeList.get(position).getName();
-
-        holder.idTag.setText(idTag);
-        holder.itamName.setText(itemName);
-
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        itemName = fridgeList.get(position);
+        holder.itemName.setText(itemName);
     }
 
     @Override
@@ -51,14 +47,13 @@ public class fridgeListAdapter extends RecyclerView.Adapter<fridgeListAdapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         View view;
-        TextView idTag, itamName;
+        TextView itemName;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             view = itemView;
-            idTag = (TextView) view.findViewById(R.id.fridge_id_tag);
-            itamName = (TextView) view.findViewById(R.id.fridge_item_name);
+            itemName = (TextView) view.findViewById(R.id.fridge_item_name);
         }
     }
 }

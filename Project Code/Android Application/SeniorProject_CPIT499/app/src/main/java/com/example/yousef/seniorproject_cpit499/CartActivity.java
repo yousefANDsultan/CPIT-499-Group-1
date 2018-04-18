@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,8 @@ public class CartActivity extends AppCompatActivity {
     private double total;
     private String address;
 
+    private Button b;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,10 +51,11 @@ public class CartActivity extends AppCompatActivity {
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(cartListAdapter);
 
+        b = (Button) findViewById(R.id.proceedToCheckout_button);
         retrieveCart();
     }
 
-    public void checkout(View view) {
+    public void proceesToCheckout(View view) {
 
         FirebaseFirestore.getInstance().collection("users").document(user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -62,7 +66,7 @@ public class CartActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), addressActivity.class));
                     } else {
                         //Toast.makeText(CartActivity.this, "address existed", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(getApplicationContext(), checkoutActivity.class));
+                        startActivity(new Intent(getApplicationContext(), checkoutSummaryActivity.class));
                     }
                 } else
                     Toast.makeText(CartActivity.this, "Document dose NOT exist", Toast.LENGTH_SHORT).show();
@@ -80,14 +84,19 @@ public class CartActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
-                for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                if (queryDocumentSnapshots.isEmpty()) {
+                    b.setEnabled(false);
+                    Toast.makeText(CartActivity.this, "Your Cart is Empty", Toast.LENGTH_SHORT).show();
+                } else {
+                    for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
 
-                    products productInCart = doc.getDocument().toObject(products.class).getID(doc.getDocument().getId());
-                    productsList.add(productInCart);
-                    total = total + (productInCart.getPrice() * productInCart.getQuantity());
-                    cartListAdapter.notifyDataSetChanged();
+                        products productInCart = doc.getDocument().toObject(products.class).getID(doc.getDocument().getId());
+                        productsList.add(productInCart);
+                        total = total + (productInCart.getPrice() * productInCart.getQuantity());
+                        cartListAdapter.notifyDataSetChanged();
+                    }
                 }
-                TextView totalprice =(TextView) findViewById(R.id.totalPrice);
+                TextView totalprice = (TextView) findViewById(R.id.totalPrice);
                 totalprice.setText(String.valueOf(total) + " SAR");
                 //Toast.makeText(getApplicationContext(), productsList.get(2).getName(), Toast.LENGTH_SHORT).show();
             }

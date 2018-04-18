@@ -1,8 +1,11 @@
 package com.example.yousef.seniorproject_cpit499;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,70 +23,66 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FrigdeActivity extends AppCompatActivity {
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private CollectionReference productsDB = FirebaseFirestore.getInstance().collection("products");
-    private DatabaseReference fridgeDB = FirebaseDatabase.getInstance().getReference().child("fridge").child(user.getUid());
+    private DatabaseReference fridgeDB = FirebaseDatabase.getInstance().getReference().child("FRIDGE").child(user.getUid());
 
     private List<String> fridgeList;
+    private List<String> tempFridgeList;
     private List<products> productsList;
+
+    ProgressDialog progressDialog;
 
     private fridgeListAdapter fridgeListAdapter;
     private RecyclerView list;
-
-    private TextView tv_idtag, tv_itemName;
-    private String idtag, itemName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frigde);
 
-        ///////CODE FOR TEST/////////
+        fridgeList = new ArrayList<>();
+        tempFridgeList = new ArrayList<>();
+        productsList = new ArrayList<>();
 
+        fridgeListAdapter = new fridgeListAdapter(this, fridgeList);
+        list = (RecyclerView) findViewById(R.id.fridgeRecyclerView);
+        list.setHasFixedSize(true);
+        list.setLayoutManager(new LinearLayoutManager(this));
+        list.setAdapter(fridgeListAdapter);
+
+        retrieveItemsOnFridge();
+    }
+
+    public void retrieveItemsOnFridge() {
+        //showProgressDialog();
         fridgeDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String s = dataSnapshot.child("idTag").getValue(String.class);
-                Toast.makeText(FrigdeActivity.this, "test: "+ s, Toast.LENGTH_SHORT).show();
+                for (DataSnapshot tagSnapshot : dataSnapshot.getChildren()) {
+                    String s = tagSnapshot.getValue(String.class);
+                    fridgeList.add(s);
+                    Log.d("TAG ID: ", s);
+                    fridgeListAdapter.notifyDataSetChanged();
+                }
+                //progressDialog.dismiss();
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
-        /////////////////////////////
-
-//retrieve all products and user fridge to compare them to get actual products on fridge
-        /*retrieveProducts();
-        retrieveItemsOnFridge();*/
-
-        //comparison
-
     }
 
-    public void retrieveProducts(){
-        productsDB.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-
-                for(DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()){
-                    products product = doc.getDocument().toObject(products.class).getID(doc.getDocument().getId());
-                    productsList.add(product);
-                }
-            }
-        });
+    private void showProgressDialog() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.show();
     }
-
-    public void retrieveItemsOnFridge(){
-
-    }
-
-
 }

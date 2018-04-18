@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 
 import java.util.List;
 
@@ -17,7 +18,6 @@ import java.util.List;
 
 public class checkoutListAdapter extends RecyclerView.Adapter<checkoutListAdapter.ViewHolder> {
 
-    private CollectionReference cartDB;
 
     private List<products> productsList;
     private Context context;
@@ -26,10 +26,9 @@ public class checkoutListAdapter extends RecyclerView.Adapter<checkoutListAdapte
     double price, total;
     int quantity;
 
-    public checkoutListAdapter(Context context, List<products> productsList, CollectionReference cartDB) {
+    public checkoutListAdapter(Context context, List<products> productsList) {
         this.context = context;
         this.productsList = productsList;
-        this.cartDB = cartDB;
     }
 
     @Override

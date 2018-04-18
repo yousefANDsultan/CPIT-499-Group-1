@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity
+            android:name=".LoginActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,8 +26,10 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".CartActivity" />
         <activity android:name=".addressActivity" />
-        <activity android:name=".checkoutActivity" />
-        <activity android:name=".FrigdeActivity"></activity>
+        <activity android:name=".checkoutSummaryActivity" />
+        <activity android:name=".FrigdeActivity" />
+        <activity android:name=".CheckoutActivity" />
+        <activity android:name=".OrdersListActivity"></activity>
     </application>
 
 </manifest>

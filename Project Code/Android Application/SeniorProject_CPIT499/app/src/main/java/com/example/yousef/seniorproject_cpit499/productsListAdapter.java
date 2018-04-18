@@ -83,6 +83,10 @@ public class productsListAdapter extends RecyclerView.Adapter<productsListAdapte
         });
     }
 
+    public void addToCart(View view){
+
+    }
+
     @Override
     public int getItemCount() {
         return productsList.size();
