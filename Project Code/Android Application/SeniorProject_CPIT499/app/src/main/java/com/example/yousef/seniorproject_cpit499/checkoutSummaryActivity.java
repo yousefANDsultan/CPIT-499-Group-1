@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,12 +14,14 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public class checkoutSummaryActivity extends AppCompatActivity {
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private DocumentReference user_database = FirebaseFirestore.getInstance().collection("users").document(user.getUid());
+    private CollectionReference allProductsDB = FirebaseFirestore.getInstance().collection("products");
 
     private List<products> productsList;
     private checkoutListAdapter checkoutListAdapter;
@@ -56,27 +60,54 @@ public class checkoutSummaryActivity extends AppCompatActivity {
         list.setAdapter(checkoutListAdapter);
         retrieveData();
 
-
     }
 
-    public void changeAddress(View view){
+    public void changeAddress(View view) {
         startActivity(new Intent(getApplicationContext(), addressActivity.class));
     }
 
-    public void checkout(View view){
+    int newQuantity, count;
+
+    //move item from cart and add it to order products list and subtract products quantity
+    public void checkout(View view) {
         final String orderID = user_database.collection("user_orders").document().getId();
+        //move item from this database
         user_database.collection("user_cart").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
-                for (final DocumentSnapshot doc : queryDocumentSnapshots){
-                    //Toast.makeText(checkoutSummaryActivity.this, "jj" + doc.getData(), Toast.LENGTH_SHORT).show();
+                for (final DocumentSnapshot doc : queryDocumentSnapshots) {
+//Toast.makeText(checkoutSummaryActivity.this, "jj" + doc.getData(), Toast.LENGTH_SHORT).show();
+
+                    Log.d("success", doc.getData() + " ... added to user order");
+
+                    //Subtract product quantity from products database
+                    Log.d("success", doc.getId() + "");
+
+
+                    //then move item to this database
                     user_database.collection("user_orders").document(orderID).collection("purchases").document(doc.getId()).set(doc.getData()).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-
+                            /*allProductsDB.document(doc.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                    Log.d("allProductsDB", documentSnapshot.getId() + "");
+                                    Log.d("Products DB", documentSnapshot.getData() + "");
+                                    int cartQuantity = doc.getLong("quantity").intValue();
+                                    Log.d("cart Quantity", cartQuantity + "");
+                                    int oldQuantity = documentSnapshot.getLong("quantity").intValue();
+                                    Log.d("old Quantity", oldQuantity + "");
+                                    newQuantity = oldQuantity - cartQuantity;
+                                    Log.d("new Quantity", oldQuantity + "");
+                                    allProductsDB.document(doc.getId()).update("quantity", newQuantity);
+                                }
+                            });*/
                         }
                     });
+
+                    //delete data from cart after move it to order list
                     user_database.collection("user_cart").document(doc.getId()).delete();
+
                 }
                 Map<Object, Object> orderDetails = new HashMap<>();
                 orderDetails.put("total", orderTotal);
@@ -88,9 +119,15 @@ public class checkoutSummaryActivity extends AppCompatActivity {
 
         Intent i = new Intent(this, CheckoutActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.putExtra("orderID",orderID);
+        i.putExtra("orderID", orderID);
         startActivity(i);
         finish();
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     public void getAddress() {
@@ -124,7 +161,7 @@ public class checkoutSummaryActivity extends AppCompatActivity {
                 if (e != null) {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-
+                CartActivity.progressDialog.dismiss();
                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                     products productInCart = doc.getDocument().toObject(products.class).getID(doc.getDocument().getId());
                     productsList.add(productInCart);

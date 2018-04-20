@@ -25,7 +25,6 @@ public class cartListAdapter extends RecyclerView.Adapter<cartListAdapter.ViewHo
 
     private ProgressDialog progressDialog;
 
-    private CollectionReference cartDB;
 
     private List<products> productsList;
     private Context context;
@@ -34,10 +33,9 @@ public class cartListAdapter extends RecyclerView.Adapter<cartListAdapter.ViewHo
     double price;
     int quantity;
 
-    public cartListAdapter(Context context, List<products> productsList, FirebaseUser user, CollectionReference cartDB) {
+    public cartListAdapter(Context context, List<products> productsList) {
         this.context = context;
         this.productsList = productsList;
-        this.cartDB = cartDB;
 
     }
 

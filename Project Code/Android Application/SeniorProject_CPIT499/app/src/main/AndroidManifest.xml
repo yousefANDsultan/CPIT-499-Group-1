@@ -3,6 +3,7 @@
     package="com.example.yousef.seniorproject_cpit499">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -29,7 +30,8 @@
         <activity android:name=".checkoutSummaryActivity" />
         <activity android:name=".FrigdeActivity" />
         <activity android:name=".CheckoutActivity" />
-        <activity android:name=".OrdersListActivity"></activity>
+        <activity android:name=".OrdersListActivity" />
+        <activity android:name=".orderDetailActivity"></activity>
     </application>
 
 </manifest>

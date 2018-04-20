@@ -1,5 +1,6 @@
 package com.example.yousef.seniorproject_cpit499;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,13 +40,14 @@ public class CartActivity extends AppCompatActivity {
 
     private Button b;
 
+    static ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
         productsList = new ArrayList<>();
-        cartListAdapter = new cartListAdapter(this, productsList, user, cartDB);
+        cartListAdapter = new cartListAdapter(this, productsList);
 
         list = (RecyclerView) findViewById(R.id.cartRecyclerView);
         list.setHasFixedSize(true);
@@ -55,9 +58,9 @@ public class CartActivity extends AppCompatActivity {
         retrieveCart();
     }
 
-    public void proceesToCheckout(View view) {
-
-        FirebaseFirestore.getInstance().collection("users").document(user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+    public void proceedToCheckout(View view) {
+        showProgressDialog();
+        FirebaseFirestore.getInstance().collection("users").document(user.getUid()).get().addOnSuccessListener(this, new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
@@ -67,6 +70,7 @@ public class CartActivity extends AppCompatActivity {
                     } else {
                         //Toast.makeText(CartActivity.this, "address existed", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), checkoutSummaryActivity.class));
+
                     }
                 } else
                     Toast.makeText(CartActivity.this, "Document dose NOT exist", Toast.LENGTH_SHORT).show();
@@ -77,7 +81,8 @@ public class CartActivity extends AppCompatActivity {
     }
 
     public void retrieveCart() {
-        cartDB.addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+        cartDB.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -101,5 +106,11 @@ public class CartActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), productsList.get(2).getName(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.show();
     }
 }

@@ -9,7 +9,7 @@ import android.widget.TextView;
 public class CheckoutActivity extends AppCompatActivity {
 
     private TextView tv_orderNumber;
-
+    private String OrderId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +18,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
         tv_orderNumber = (TextView) findViewById(R.id.orderNumber);
 
-        String data = getIntent().getExtras().getString("orderID");
-        tv_orderNumber.setText(data);
+        OrderId = getIntent().getExtras().getString("orderID");
+        tv_orderNumber.setText(OrderId);
     }
 
 
@@ -30,7 +30,9 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     public void orderDetails(View view) {
-
+        Intent i = new Intent(getApplicationContext(), orderDetailActivity.class);
+        i.putExtra("orderIdDetail",OrderId);
+        startActivity(i);
     }
 
     @Override

@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
     private List<products> productsList;
     private productsListAdapter productsListAdapter;
     private RecyclerView list;
+    private ListenerRegistration listenerRegistration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,12 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        database = FirebaseFirestore.getInstance().collection("products");
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -73,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
 
             case R.id.orders:
 
-                //Something
+                startActivity(new Intent(this, OrdersListActivity.class));
                 break;
 
             case R.id.logout:
@@ -90,7 +98,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void retrieveProducts() {
-        database.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        listenerRegistration = database.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
 

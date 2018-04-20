@@ -67,6 +67,8 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/summ_PTotal"
         android:layout_marginTop="25dp"
+        android:layout_marginBottom="8dp"
+        android:layout_above="@+id/summ_PTotal"
         android:text="Total" />
 
     <TextView
