@@ -25,6 +25,7 @@ public class cartListAdapter extends RecyclerView.Adapter<cartListAdapter.ViewHo
 
     private ProgressDialog progressDialog;
 
+    CollectionReference cartDB;
 
     private List<products> productsList;
     private Context context;
@@ -33,9 +34,10 @@ public class cartListAdapter extends RecyclerView.Adapter<cartListAdapter.ViewHo
     double price;
     int quantity;
 
-    public cartListAdapter(Context context, List<products> productsList) {
+    public cartListAdapter(Context context, List<products> productsList, CollectionReference cartDB) {
         this.context = context;
         this.productsList = productsList;
+        this.cartDB = cartDB;
 
     }
 
@@ -57,7 +59,7 @@ public class cartListAdapter extends RecyclerView.Adapter<cartListAdapter.ViewHo
         holder.price.setText(String.valueOf(new Double(price * quantity)));
         holder.quantity.setText(String.valueOf(quantity));
 
-        /*holder.removeFromCart.setOnClickListener(new View.OnClickListener() {
+        holder.removeFromCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //showProgressDialog();
@@ -67,9 +69,7 @@ public class cartListAdapter extends RecyclerView.Adapter<cartListAdapter.ViewHo
                 notifyDataSetChanged();
                 cartDB.document(ID).delete();
             }
-        });*/
-
-
+        });
 
     }
 

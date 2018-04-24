@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".LoginActivity"
-            android:noHistory="true">
+            android:label="Log In">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,9 +29,10 @@
         <activity android:name=".addressActivity" />
         <activity android:name=".checkoutSummaryActivity" />
         <activity android:name=".FrigdeActivity" />
-        <activity android:name=".CheckoutActivity" />
+        <activity android:name=".checkoutActivity" />
         <activity android:name=".OrdersListActivity" />
-        <activity android:name=".orderDetailActivity"></activity>
+        <activity android:name=".orderDetailActivity" />
+        <activity android:name=".FavoriteActivity"></activity>
     </application>
 
 </manifest>

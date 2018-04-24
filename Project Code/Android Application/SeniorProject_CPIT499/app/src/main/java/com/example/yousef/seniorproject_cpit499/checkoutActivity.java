@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-public class CheckoutActivity extends AppCompatActivity {
+public class checkoutActivity extends AppCompatActivity {
 
     private TextView tv_orderNumber;
     private String OrderId;

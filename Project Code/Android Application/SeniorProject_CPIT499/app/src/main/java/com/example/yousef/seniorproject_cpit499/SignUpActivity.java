@@ -7,20 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -28,7 +24,6 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    users user;
     private TextView et_userName, et_email, et_confirmEmail, et_password, et_confirmPassword;
     private String userName, email, confirmEmail, password, confirmPassword;
     private CollectionReference database = FirebaseFirestore.getInstance().collection("users");
@@ -42,14 +37,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        /*Button register =(Button) findViewById(R.id.registerBot);
-
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });*/
     }
 
     public void register(View view) {
@@ -63,7 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
 
-        //register new user .. create new collection
+        //register new user .. create new collection and unique document for user
         else {
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override

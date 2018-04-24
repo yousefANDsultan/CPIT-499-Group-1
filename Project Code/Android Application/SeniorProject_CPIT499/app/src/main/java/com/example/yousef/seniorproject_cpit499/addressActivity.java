@@ -1,12 +1,18 @@
 package com.example.yousef.seniorproject_cpit499;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,13 +33,28 @@ public class addressActivity extends AppCompatActivity {
     private CollectionReference addressInfoDB = FirebaseFirestore.getInstance().collection("users");
     ProgressDialog progressDialog;
 
+    ConnectivityManager connection;
+    NetworkInfo netInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address);
         declaration();
         getAddress();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //checking
+        connection = (ConnectivityManager) getApplicationContext().getSystemService(this.CONNECTIVITY_SERVICE);
+        netInfo = connection.getActiveNetworkInfo();
+
+        //check if internet is available
+        if (netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()) {
+            connectionDialog();
+        }
     }
 
     public void getAddress() {
@@ -51,32 +72,42 @@ public class addressActivity extends AppCompatActivity {
     }
 
     public void saveAddress(View view) {
-        showProgressDialog();
-        // This Method use to initiate the input texts then initiate it as Sting variables
-        initialization();
-        // This Method use to validate all field by some conditions
-        validation();
-        if (!validation()) {
-            //Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
-            progressDialog.dismiss();
+        //check if internet is available
+        connection = (ConnectivityManager) getApplicationContext().getSystemService(this.CONNECTIVITY_SERVICE);
+        netInfo = connection.getActiveNetworkInfo();
+        // internet not available
+        if (netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()) {
+            connectionDialog();
         }
-
-        //add user address information
+        // internet is available
         else {
-            Map<String, Object> address = new HashMap<>();
-            address.put("country", country);
-            address.put("city", city);
-            address.put("address", Address);
-            address.put("phone number", phoneNumber);
+            showProgressDialog();
+            // This Method use to initiate the input texts then initiate it as Sting variables
+            initialization();
+            // This Method use to validate all field by some conditions
+            validation();
+            if (!validation()) {
+                //Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
+            }
 
-            addressInfoDB.document(mAuth.getUid()).update(address).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    progressDialog.dismiss();
+            //add user address information
+            else {
+                Map<String, Object> address = new HashMap<>();
+                address.put("country", country);
+                address.put("city", city);
+                address.put("address", Address);
+                address.put("phone number", phoneNumber);
 
-                }
-            });
-            startActivity(new Intent(getApplicationContext(), checkoutSummaryActivity.class));
+                addressInfoDB.document(mAuth.getUid()).update(address).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        progressDialog.dismiss();
+
+                    }
+                });
+                finish();
+            }
         }
     }
 
@@ -106,8 +137,7 @@ public class addressActivity extends AppCompatActivity {
             et_phoneNumber.setError("length should be 12");
             et_phoneNumber.requestFocus();
             valid = false;
-        }
-        else if (!Patterns.PHONE.matcher(phoneNumber).matches()) {
+        } else if (!Patterns.PHONE.matcher(phoneNumber).matches()) {
             et_phoneNumber.setError("Enter Correct Phone Number");
             et_phoneNumber.requestFocus();
             valid = false;
@@ -136,5 +166,30 @@ public class addressActivity extends AppCompatActivity {
         progressDialog.setMessage("Please Wait...");
         progressDialog.show();
     }
+
+    public void connectionDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("Check Your Internet Connection");
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton("sitting",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface sitting, int which) {
+                        sitting.dismiss();
+                        startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                    }
+                }).setNegativeButton("Retry",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface retry, int i) {
+                        retry.dismiss();
+                        onStart();
+                    }
+                });
+        AlertDialog alert = alertDialog.create();
+        alert.show();
+        Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+    }
+
 }
 

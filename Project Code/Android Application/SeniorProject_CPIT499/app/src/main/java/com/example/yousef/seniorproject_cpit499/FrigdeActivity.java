@@ -47,8 +47,8 @@ public class FrigdeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_frigde);
 
         fridgeList = new ArrayList<>();
-        tempFridgeList = new ArrayList<>();
-        productsList = new ArrayList<>();
+        //tempFridgeList = new ArrayList<>();
+        //productsList = new ArrayList<>();
 
         fridgeListAdapter = new fridgeListAdapter(this, fridgeList);
         list = (RecyclerView) findViewById(R.id.fridgeRecyclerView);
@@ -64,13 +64,18 @@ public class FrigdeActivity extends AppCompatActivity {
         fridgeDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot tagSnapshot : dataSnapshot.getChildren()) {
-                    String s = tagSnapshot.getValue(String.class);
-                    fridgeList.add(s);
-                    Log.d("TAG ID: ", s);
-                    fridgeListAdapter.notifyDataSetChanged();
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot tagSnapshot : dataSnapshot.getChildren()) {
+                        String s = tagSnapshot.getValue(String.class);
+                        fridgeList.add(s);
+                        Log.d("TAG ID: ", s);
+                        fridgeListAdapter.notifyDataSetChanged();
+                    }
+                } else {
+                    Toast.makeText(FrigdeActivity.this, "Fridge is empty",
+                            Toast.LENGTH_SHORT).show();
                 }
-                //progressDialog.dismiss();
+
             }
 
             @Override
@@ -78,6 +83,7 @@ public class FrigdeActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     private void showProgressDialog() {

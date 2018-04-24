@@ -9,9 +9,11 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
+public class ExampleUnitTest extends HomeActivity{
+
     @Test
     public void addition_isCorrect() throws Exception {
+        databaseList();
         assertEquals(4, 2 + 2);
     }
 }

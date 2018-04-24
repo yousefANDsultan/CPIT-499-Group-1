@@ -1,6 +1,11 @@
 package com.example.yousef.seniorproject_cpit499;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +33,9 @@ public class OrdersListActivity extends AppCompatActivity {
     private orderListAdapter orderListAdapter;
     private RecyclerView list;
 
+    ConnectivityManager connection;
+    NetworkInfo netInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,19 @@ public class OrdersListActivity extends AppCompatActivity {
         list.setAdapter(orderListAdapter);
 
         retrieveOrders();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //checking
+        connection = (ConnectivityManager) getApplicationContext().getSystemService(this.CONNECTIVITY_SERVICE);
+        netInfo = connection.getActiveNetworkInfo();
+
+        //check if internet is available
+        if (netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()) {
+            connectionDialog();
+        }
     }
 
     @Override
@@ -69,5 +90,28 @@ public class OrdersListActivity extends AppCompatActivity {
         });
     }
 
+    public void connectionDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("Check Your Internet Connection");
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton("sitting",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface sitting, int which) {
+                        sitting.dismiss();
+                        startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                    }
+                }).setNegativeButton("Retry",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface retry, int i) {
+                        retry.dismiss();
+                        recreate();
+                    }
+                });
+        AlertDialog alert = alertDialog.create();
+        alert.show();
+        Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
+    }
 
 }

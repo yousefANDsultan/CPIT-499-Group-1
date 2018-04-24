@@ -1,6 +1,11 @@
 package com.example.yousef.seniorproject_cpit499;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +24,6 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -35,7 +39,10 @@ public class HomeActivity extends AppCompatActivity {
     private List<products> productsList;
     private productsListAdapter productsListAdapter;
     private RecyclerView list;
-    private ListenerRegistration listenerRegistration;
+
+    ConnectivityManager connection;
+    NetworkInfo netInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +62,20 @@ public class HomeActivity extends AppCompatActivity {
         list.setAdapter(productsListAdapter);
 
         retrieveProducts();
+    }
+
+    //check internet connection
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //checking
+        connection = (ConnectivityManager) getApplicationContext().getSystemService(this.CONNECTIVITY_SERVICE);
+        netInfo = connection.getActiveNetworkInfo();
+
+        //dialog message and go to enable Internet from sitting
+        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+            connectionDialog();
+        }
     }
 
     @Override
@@ -89,6 +110,7 @@ public class HomeActivity extends AppCompatActivity {
                 finish();
                 mAuth.signOut();
                 startActivity(new Intent(this, LoginActivity.class));
+                finishAffinity();
                 break;
 
             default:
@@ -98,7 +120,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void retrieveProducts() {
-        listenerRegistration = database.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        database.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
 
@@ -119,5 +141,29 @@ public class HomeActivity extends AppCompatActivity {
 
     public void fridgeItems(View view) {
         startActivity(new Intent(getApplicationContext(), FrigdeActivity.class));
+    }
+
+    public void connectionDialog(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("Check Your Internet Connection");
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton("sitting",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface sitting, int which) {
+                        sitting.dismiss();
+                        startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                    }
+                }).setNegativeButton("Retry",
+                new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface retry, int i) {
+                        retry.dismiss();
+                        onStart();
+                    }
+                });
+        AlertDialog alert = alertDialog.create();
+        alert.show();
+        Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
     }
 }

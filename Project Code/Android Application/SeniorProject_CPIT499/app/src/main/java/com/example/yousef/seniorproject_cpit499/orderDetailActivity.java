@@ -1,7 +1,12 @@
 package com.example.yousef.seniorproject_cpit499;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +46,9 @@ public class orderDetailActivity extends AppCompatActivity {
     private String orderID, status;
     private double orderTotal;
 
+    ConnectivityManager connection;
+    NetworkInfo netInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +70,19 @@ public class orderDetailActivity extends AppCompatActivity {
         retrieveOrderInfo();
         retrievePurchases();
 
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //checking
+        connection = (ConnectivityManager) getApplicationContext().getSystemService(this.CONNECTIVITY_SERVICE);
+        netInfo = connection.getActiveNetworkInfo();
+
+        //check if internet is available
+        if (netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()) {
+            connectionDialog();
+        }
     }
 
     @Override
@@ -73,13 +93,22 @@ public class orderDetailActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void confirm(View view){
-        if(status.equals("In Process")) {
-            confirm.setBackgroundColor(Color.GREEN);
-            confirm.setText("Order Has Been Confirmed");
-            confirm.setTextColor(Color.BLACK);
-            confirm.setEnabled(false);
-            user_database.document(orderID).update("status", "delivered");
+    public void confirm(View view) {
+        connection = (ConnectivityManager) getApplicationContext().getSystemService(this.CONNECTIVITY_SERVICE);
+        netInfo = connection.getActiveNetworkInfo();
+        // internet not available
+        if (netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()) {
+            connectionDialog();
+        }
+        // internet is available
+        else {
+            if (status.equals("In Process")) {
+                confirm.setBackgroundColor(Color.GREEN);
+                confirm.setText("Order Has Been Confirmed");
+                confirm.setTextColor(Color.BLACK);
+                confirm.setEnabled(false);
+                user_database.document(orderID).update("status", "delivered");
+            }
         }
     }
 
@@ -99,7 +128,7 @@ public class orderDetailActivity extends AppCompatActivity {
                 tv_orderID.setText("Order ID: " + ID);
                 tv_orderStatus.setText("Status: " + status);
 
-                if(status.equals("delivered")) {
+                if (status.equals("delivered")) {
                     confirm.setBackgroundColor(Color.GREEN);
                     confirm.setText("Order Has Been Confirmed");
                     confirm.setTextColor(Color.BLACK);
@@ -128,6 +157,30 @@ public class orderDetailActivity extends AppCompatActivity {
                 tv_orderTotal.setText("Order Total: " + String.valueOf(orderTotal) + " SAR");
             }
         });
+    }
+
+    public void connectionDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage("Check Your Internet Connection");
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton("sitting",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface sitting, int which) {
+                        sitting.dismiss();
+                        startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                    }
+                }).setNegativeButton("Retry",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface retry, int i) {
+                        retry.dismiss();
+                        recreate();
+                    }
+                });
+        AlertDialog alert = alertDialog.create();
+        alert.show();
+        Toast.makeText(this, "No Internet connection!", Toast.LENGTH_LONG).show();
     }
 
 }
